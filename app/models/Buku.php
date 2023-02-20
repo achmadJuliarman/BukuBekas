@@ -13,7 +13,7 @@ class Buku extends Model
 
 	public function getAllBuku()
 	{
-		$this->db->query('SELECT * FROM buku JOIN users using(id_user);');	
+		$this->db->query('SELECT * FROM buku JOIN users using(id_user) group by id_buku DESC;');	
 		return $this->db->resultSet();
 	}
 
@@ -32,7 +32,7 @@ class Buku extends Model
 				  VALUES 
 				  ('', :id_user, :cover, :judul, :deskripsi, :harga);";
 
-		var_dump($data);
+		// var_dump($data);
 		$cover = $this->uploadGambar();
 		$this->db->query($query);
 		$this->db->bind('id_user', $data['id']);
@@ -43,6 +43,41 @@ class Buku extends Model
 
 		$this->db->execute();
 
+		return $this->db->rowCount();
+
+	}
+
+	public function ubah($data)
+	{
+		$query = "UPDATE buku SET
+		cover =:cover,
+		judul =:judul,
+		deskripsi =:deskripsi,
+		harga =:harga
+		WHERE id_buku =:idb AND id_user =:idu";
+
+		// var_dump($_FILES['gambar']['error']);
+		// die();
+		var_dump($_POST);
+		$gambarlama = $_POST['gambarlama'];
+		if ($_FILES['gambar']['error'] === 4) 
+		{
+			$gambar = $gambarlama; 
+		}else{
+			$gambar = $this->uploadGambar();
+		}
+		$this->db->query($query);
+		$this->db->bind('idu', $data['id-user']);
+		$this->db->bind('idb', $data['id-buku']);
+		$this->db->bind('cover', $gambar);
+		$this->db->bind('judul', $data['judul']);
+		$this->db->bind('deskripsi', $data['deskripsi']);	
+		$this->db->bind('harga', $data['harga']);
+
+		$this->db->execute();
+
+		echo $this->db->rowCount();
+		
 		return $this->db->rowCount();
 
 	}
@@ -67,7 +102,11 @@ class Buku extends Model
 
 	public function getFavorite($idUser)
 	{
-		$query = "SELECT * FROM favorit 
+		$query = "SELECT cover,judul,harga,deskripsi,
+		buku.id_user as id_author,
+		nama, buku.id_buku, favorit.id_user as id_user,
+		no_telp
+		FROM favorit 
 		INNER JOIN users
 		on favorit.id_user = users.id_user
 		INNER JOIN buku
@@ -92,6 +131,35 @@ class Buku extends Model
 		return $this->db->rowCount();
 
 	}
+
+	public function hapusBuku($idbuku)
+	{
+		$query = "DELETE FROM buku WHERE id_buku =:idB";
+		$this->db->query($query);
+		$this->db->bind('idB', $idbuku);
+
+		$this->db->execute();
+		// echo $this->db->rowCount();
+		// die();
+		return $this->db->rowCount();
+	}
+
+	public function cariBuku($keyword)
+	{
+		$search_q = '%'.$keyword.'%';
+		$query = "SELECT * FROM buku 
+		join users using(id_user)
+		WHERE 
+		judul like :keyword
+		OR harga like :keyword
+		OR deskripsi like :keyword";
+
+		$this->db->query($query);
+		$this->db->bind('keyword', $search_q);
+		return $this->db->resultSet();
+	}
+
+
 
 	// public function cariBuku($keyword)
 	// {

@@ -8,7 +8,8 @@ class HomeController extends Controller
 	{
 		$data['title'] = 'Home';
 		$data['nama'] = $this->model('User')->getNama();
-		$this->view('templates/header', $data);
+		$this->view('templates/header-rendy', $data);
+		$this->view('templates/topbar', $data);
 		$this->view('home/index', $data);
 		$this->view('templates/footer');
 	}

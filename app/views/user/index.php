@@ -1,85 +1,42 @@
-<?php // var_dump($data['buku']); ?>
 <div class="container">
-	<?php if(empty($data['buku'])) {
-		echo "<h1> Beliau Masih Belum Upload Buku";
-		die();
-	} ?>
-	<h1 class="mx-4">Tampil Buku Berdasarkan Penjual :
-		<?= $data['buku'][0]['nama']; ?>
-	</h1>
-	<!-- button untuk menuju ke halaman buku favorite user -->
-	<div align="right" <?php if (isset($_SESSION['login'])) { ?> 	<?=($_SESSION["level"] === 'admin' && empty($_SESSION)) ? "style='display: none;'" : "" ?> <?php
-	} else if (empty($_SESSION)) {
-		echo "style='display: none;'";
-	} ?>>
-		<a href="<?= BASEURL; ?>/Books/favoritemu/<?= $_SESSION['id_user']; ?>">
-			<button type="button" class="btn btn-outline-primary mb-4">
-				Buku FavoriteMu
-			</button>
+	<?php foreach ($data['user'] as $u) { ?>
+		<a href="<?= BASEURL; ?>/books/author/<?= $u['id_user']; ?>" 
+			style="text-decoration: none;">
+			<h1><?= $u['nama']; ?></h1>
 		</a>
-	</div>
-	<div class="card d-flex flex-row flex-wrap justify-content-center" style="margin-bottom: 100px; width: 70vw;">
-		<?php $id_bf = 0; ?>
-		<?php foreach ($data['buku'] as $b): ?>
-			<div class="card mb-4 mt-4 shadow p-2 bg-body-tertiary rounded" style="width: 15vw; margin-left: 1vw;">
-				<ul class="list-group">
-					<div class="cover" 
-						style="background-image:url('<?= BASEURL; ?>/img/<?= $b['cover']; ?>');
-						background-size: cover; width: 14vw; height: 200px;">
-					</div>
-					<p class="list-group"><b>Judul : </b>
-						<?= $b['judul']; ?>
-					</p>
-					<p class="list-group"><b>Harga : </b>Rp.
-						<?= $b['harga']; ?>
-					</p>
-					<p class="list-group" style=""><b> Deskripsi : </b>
-						<?= substr($b['deskripsi'], 0, 8); ?> ...
-					</p>
-					<br>
-				</ul>
 
-				<p class="list-group small mb-1" align="left">
-					<a href="<?= BASEURL; ?>/books/author/<?= $b['id_user']; ?>" style="text-decoration: none;">
-						<?= $b['nama']; ?>
-					</a>
-				</p>
-				<div align="right" class="mb-1">
-					<button type="button" class="btn btn-outline-danger rounded-circle border-0" data-bs-toggle="modal"
-						data-bs-target="#modal-detail" id="detail" style="width: 2vw; height: 3.5vh; background-image: url('<?= BASEURL ?>/img/fav.png');
-						background-size: 1.5vw; background-repeat: no-repeat; background-position: center;
-						<?php if (!isset($_SESSION['login'])) {
-							echo 'display: none;';
-						} ?>
-						<?php for ($i = 0; $i < count($data['favorit']); $i++) {
-							if ($data['favorit'][$i]['id_buku'] === $b['id_buku']) {
-								$id_bf = $data['favorit'][$i]['id_buku'];
-								echo 'display: none;';
-							}
-						} ?>" data-idbuku="<?= $b['id_buku']; ?>" data-iduser="<?= $b['id_user']; ?>" data-judul="<?= $b['judul']; ?>"
-						data-harga="<?= $b['harga']; ?>" data-no="<?= $b['no_telp']; ?>"
-						data-deskripsi="<?= $b['deskripsi']; ?>" data-cover="<?= $b['cover']; ?>"
-						data-nama="<?= $b['nama']; ?>" data-bukufav="<?= $id_bf; ?>">
-					</button>
-					<?php for ($i = 0; $i < count($data['favorit']); $i++) {
-							if ($data['favorit'][$i]['id_buku'] === $b['id_buku']) { ?>
-								<img src="<?= BASEURL; ?>/img/heart.png" alt="" style="width: 1.7vw;">
-						<?php }
-					} ?>
-				</div>
-				<button type="button" class="btn btn-primary mb-1" data-bs-toggle="modal" data-bs-target="#modal-detail"
+	<div class="user card mb-4 mt-2 p-2 bg-light d-flex">
+		
+
+		<?php $buku_user = $this->model('buku')->getBukuByAuthor($u['id_user']); ?>
+		<?php $i=1; ?>
+		<?php foreach ($buku_user as $b) { ?>
+		<div class="container">
+			<div class="card buku mt-2 p-1" style="width: 18rem;">
+			  <img class="card-img-top" src="<?= BASEURL; ?>/img/<?= $b['cover']; ?>" alt="buku <?= $u['nama']; ?>">
+			  <div class="card-body">
+			    <p class="card-text"><b><?= $b['judul']; ?></b></p>
+			    <button type="button" class="btn btn-primary mb-1" data-bs-toggle="modal" data-bs-target="#modal-detail"
 					id="detail" data-idB="<?= $b['id_buku']; ?>" data-idU="<?= $b['id_user']; ?>"
 					data-judul="<?= $b['judul']; ?>" data-harga="<?= $b['harga']; ?>" data-no="<?= $b['no_telp']; ?>"
 					data-deskripsi="<?= $b['deskripsi']; ?>" data-cover="<?= $b['cover']; ?>">
 					Lihat Detail..
 				</button>
-				<button class="btn btn-light" style="background-color: rgb(37,211,102); ">
-					<a href="https://api.whatsapp.com/send?phone=62<?= $b['no_telp']; ?>"
-						style="color: white; text-decoration: none;" target="blank">Chat Ke WA</a>
-				</button>
+			  </div>
 			</div>
-		<?php endforeach; ?>
+		</div>
+		<?php 
+		$i++;
+			if($i >= 2) break; 
+		?>
+		<?php } ?>
+	<div align="right">
+		<a href="<?= BASEURL; ?>/books/author/<?= $u['id_user']; ?>">Lihat Buku <?= $u['nama']; ?> Lainnya >></a>
 	</div>
+	
+	</div>
+
+	<?php } ?>
 </div>
 
 <!-- Modal Box Detail -->

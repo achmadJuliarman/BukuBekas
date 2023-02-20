@@ -1,11 +1,22 @@
+
+<?php Alert::showAlert(); ?>
+<?php if (empty($_SESSION)) {
+	echo "<script>Login Terlebih Dahulu
+	window.history.back();</script>";
+} ?>
+
+
 <div class="container">
-<h1 class="mx-4">Buku Favoritemu </h1>
-<div class="card d-flex flex-row flex-wrap justify-content-center" style="margin-bottom: 100px; width: 60vw;" >
+<h1 class="mx-4">Buku Favoritemu : <?= $data['user']['nama']; ?></h1><br><hr>
+<div class="card d-flex flex-row flex-wrap justify-content-center" style="margin-bottom: 100px; width: 70vw;" >
 		<?php foreach ($data['buku'] as $b) : ?>
 		<div class="card mb-4 mt-4 shadow p-2 bg-body-tertiary rounded" 
 		style="width: 15vw; margin-left: 1vw;">
 			<ul class="list-group">
-				<img src="<?= BASEURL; ?>/img/<?= $b['cover']; ?>" alt="">
+				<div class="cover" 
+					style="background-image:url('<?= BASEURL; ?>/img/<?= $b['cover']; ?>');
+					background-size: cover; width: 14vw; height: 200px;">
+				</div>
 				<p class="list-group"><b>Judul : </b><?= $b['judul']; ?></p>
 				<p class="list-group"><b>Harga : </b>Rp.<?= $b['harga']; ?></p>
 				<p class="list-group" style=""><b> Deskripsi : </b><?= substr($b['deskripsi'], 0,8); ?> ...</p>
@@ -13,8 +24,9 @@
 			</ul>
 
 			<p class="list-group small mb-1" align="left">
-					<a href="<?= BASEURL; ?>/books/author/<?= $b['id_user']; ?>" style="text-decoration: none;">
-						<?= $b['nama'];  ?>	
+					<a href="<?= BASEURL; ?>/books/author/<?= $b['id_author']; ?>" style="text-decoration: none;">
+						<?php $author = $this->model('Buku')->getBukuByAuthor($b['id_author']); ?>
+						<?= $author[0]['nama']?>	
 					</a>	 
 			</p> 
 			<button type="button" class="btn btn-primary mb-1" data-bs-toggle="modal" data-bs-target="#modal-detail" id="detail"
@@ -33,7 +45,7 @@
 </div>
 
 <!-- Modal Box Detail -->
-<div class="modal modal-xl" tabindex="-1" id="modal-detail">
+<div class="modal modal" tabindex="-1" id="modal-detail">
   <div class="modal-dialog modal-dialog-scrollable">
     <div class="modal-content">
       <div class="modal-header">
@@ -41,7 +53,9 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-      	<img src="" alt="" id="cover"><br><br><br>
+      	<div class="container" style="width: 10vw;" align="center">
+			<img src="" alt="" id="cover" style="width: 10vw;" class="rounded"><br><br><br>
+		</div>
       	<div class="penjual" id="penjual">
       		<a href="" style="text-decoration: none;">
       			<h4></h4>
@@ -69,7 +83,7 @@
 			<a href="" style="color: white; text-decoration: none;" target="blank">Chat Ke WA</a>
 	    </button>
 	    <button class="btn btn-outline-danger" id="hapus-fav">
-			<a href="" style="text-decoration: none; color:black;text-shadow: 1px 1px 1px 1px;" target="blank">Hapus Dari Favorite</a>
+			<a href="" style="text-decoration: none; color:black;text-shadow: 1px 1px 1px 1px;">Hapus Dari Favorite</a>
 	    </button>
       </div>
     </div>
